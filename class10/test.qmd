@@ -1,0 +1,14 @@
+---
+title: "test"
+format: pdf
+---
+
+## Quarto
+
+```{r}
+#| eval: !expr knitr::is_html_output()
+library(bio3d)
+view.pdb(pdb) |>
+  setSpin()
+```
+
