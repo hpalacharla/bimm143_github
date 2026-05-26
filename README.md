@@ -10,5 +10,9 @@ Class 5: [Data Viz with ggplot2](class05/class05.qmd)
 
 Class 6: [R Functions](class06/class06.html)
 
-Class 7: [Principle Component Analysis]()
+Class 7: [Introduction to Machine Learning]()
+
+Class 8: [Unsupervised Learning Analysis of Human Breast Cancer Cells]()
+
+Class 9: 
 
