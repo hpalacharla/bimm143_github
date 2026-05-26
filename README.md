@@ -14,7 +14,7 @@ Class 7: [Introduction to Machine Learning](class07/class07)
 
 Class 8: [Unsupervised Learning Analysis of Human Breast Cancer Cells](class08/class08)
 
-Class 9: [Unsupervised Learning Analysis of Halloween Candy](class09/class09.md)
+Class 9: [Unsupervised Learning Analysis of Halloween Candy](class09/class09)
 
 Class 10: [Structural Bioinformatics](class10/class10)
 
