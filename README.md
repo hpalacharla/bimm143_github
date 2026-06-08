@@ -25,3 +25,7 @@ Class 12: [Introduction to Genome Informatics](class12/class12)
 Class 13: [Transcriptomics and Analysis of RNA-Seq Data](class13/class13)
 
 Class 14: [Pathway Analysis of RNA-Seq Data: Mini Project](class14/class14)
+
+Class 18: [Investigating Pertussis Resurgence Mini Project](class18/class18)
+
+Class 19: [Cancer Mutation Analysis Mini Project](class19/class19)
