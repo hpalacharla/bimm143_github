@@ -26,6 +26,12 @@ Class 13: [Transcriptomics and Analysis of RNA-Seq Data](class13/class13)
 
 Class 14: [Pathway Analysis of RNA-Seq Data: Mini Project](class14/class14)
 
+Class 15: Introduction to Git and GitHub
+
+Class 16: UNIX for Bioinformatics + Launching/Using AWS EC2 Instances 
+
+Class 17: Introduction to GitHub Pages + Online Portfolio Development
+
 Class 18: [Investigating Pertussis Resurgence Mini Project](class18/class18)
 
 Class 19 (in-progress): [Cancer Mutation Analysis Mini Project](class19/class19)
