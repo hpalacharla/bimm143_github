@@ -32,4 +32,6 @@ Class 19: [Cancer Mutation Analysis Mini Project](class19/class19)
 
 ## Find a Gene Project
 
-[Find a Gene Submission](findagene/findagene)
+[Work in R](findagene/findagene)
+
+[Final Submission](findagene/findagene_files/Palacharla_Find_A_Gene_Project.pdf)
