@@ -1,0 +1,15 @@
+---
+title: "Class 19"
+author: "Harshitha Palacharla"
+format: html
+---
+
+```{r}
+library(bio3d)
+
+sd <- read.fasta("A17775151_mutant_seq.fa")
+sd
+```
+
+
+

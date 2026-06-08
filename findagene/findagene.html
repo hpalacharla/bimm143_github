@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Harshitha Palacharla (A17775151)">
+
+<title>Find a Gene</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="findagene_files/libs/clipboard/clipboard.min.js"></script>
+<script src="findagene_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="findagene_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="findagene_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="findagene_files/libs/quarto-html/popper.min.js"></script>
+<script src="findagene_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="findagene_files/libs/quarto-html/anchor.min.js"></script>
+<link href="findagene_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="findagene_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="findagene_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="findagene_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="findagene_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#load-in-pdb-format-files" id="toc-load-in-pdb-format-files" class="nav-link active" data-scroll-target="#load-in-pdb-format-files">Load in PDB format files</a></li>
+  <li><a href="#residue-conservation-from-alignment-file" id="toc-residue-conservation-from-alignment-file" class="nav-link" data-scroll-target="#residue-conservation-from-alignment-file">Residue conservation from alignment file:</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Find a Gene</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Harshitha Palacharla (A17775151) </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bio3d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>aln <span class="ot">&lt;-</span> <span class="fu">read.fasta</span>(<span class="at">file =</span> <span class="st">"muscle-I20260606-223917-0223-39685229-p1m.fa"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>aln</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                               1        .         .         .         .         50 
+[Truncated_Name:1]Human        NMEATETDLLNGHL---KKVDNNLTEAQRFSSLPRRAAVNIEFRDLSYSV
+[Truncated_Name:2]Red_flour_   NKMATDTVLLKNRSSD-YKVQITPTQQKTLTHLPQRPKVDLAFSNLKYTV
+[Truncated_Name:3]Superworm    --MGRNFLLNNNRSSD-YKVQITPAQPKTLTHLPQRPKVDLAFSNLKYTV
+[Truncated_Name:4]Yellow_mea   --MGRNFLLNNNRSSD-YKVQIQPLQQKTLTHLPQRPKVDLAFSNLNYTV
+[Truncated_Name:5]Black_flou   --MGRNFLLNNNRSSD-YKVQITPTQQKTLTHLPQRPKVDLAFSNLKYTV
+[Truncated_Name:6]Colorado_p   --MATDNLLLKTTSTD-VKVQIVSTPKKNLTHLPKRPKVDLAFSNLKYVV
+[Truncated_Name:7]Asian_long   --LATDNLLLKNRSPD-VKVQITPAQPKKLTHLPERPKVDLAFSNLTYTV
+[Truncated_Name:8]Lesser_gra   -ELATDTLLLKNRGSDAVKVQITPCQTKTLTHLPRRPKVDLAFENLTYTV
+                                  ^    *         **          ^ ** *  * ^ *  * * * 
+                               1        .         .         .         .         50 
+
+                              51        .         .         .         .         100 
+[Truncated_Name:1]Human        PEGPWWRKKGYKTLLKGISGKFNSGELVAIMGPSGAGKSTLMNILAGYRE
+[Truncated_Name:2]Red_flour_   KQG-----KAEKTILKSVSGRLRSGELTAIMGPSGAGKSTLLNILTGYRT
+[Truncated_Name:3]Superworm    KQG-----KVEKTILKSVSGRLRSGELTAIMGPSGAGKSTLLNILTGYRT
+[Truncated_Name:4]Yellow_mea   KQG-----KVEKTILKSVSGRLRSGELTAIMGPSGAGKSTLLNILTGYRT
+[Truncated_Name:5]Black_flou   KQG-----KAEKTILKSVSGRLRSGELTAIMGPSGAGKSTLLNILTGYRT
+[Truncated_Name:6]Colorado_p   KQG-----KTEKVILRNVSGHIRSGELCAIMGPSGAGKSTLLNILTGYKT
+[Truncated_Name:7]Asian_long   RQG-----KKDKIILKNVSGRLRSGELCAIMGPSGAGKSTLLNILTGYKT
+[Truncated_Name:8]Lesser_gra   KQG-----KNDKTILKSVSGRLRSGELTAIMGPSGAGKSTLLNILTGYKT
+                                 *     *  * ^*^ ^**^  **** *************^*** **^  
+                              51        .         .         .         .         100 
+
+                             101        .         .         .         .         150 
+[Truncated_Name:1]Human        TGMKGAVLINGLPRDLRCFRKVSCYIMQDDMLLPHLTVQEAMMVSAHLKL
+[Truncated_Name:2]Red_flour_   DGVQGQILMNDSERDLSQFRKLSAYIMQDNQLHLNLTVDEAMNVAAKLKI
+[Truncated_Name:3]Superworm    DGVEGQILMNDNERDLSQFRKLSAYIMQDNQLHLNLTVDEAMNVAAKLKI
+[Truncated_Name:4]Yellow_mea   EGVKGQILMNDSERDLSQFRKLSAYIMQDNQLHLNLTVDEAMNVAAKLKI
+[Truncated_Name:5]Black_flou   DGVQGQILMNDSERDLSQFRKLSAYIMQDNQLHLNLTVDEAMNVAAKLKI
+[Truncated_Name:6]Colorado_p   EGMSGQILMNDADRDLGQFRKLSAYIMQDNQLHANLTVDEAMSVAAKLKI
+[Truncated_Name:7]Asian_long   EGTTGQILMNNNERDLSQFRKLSAYIMQDNQLHANLTVDEAMTVAAKLKI
+[Truncated_Name:8]Lesser_gra   EGLSGTILMNENERDLSQFRKLSAYIMQDNQLHANLTVDEAMNVAAKLKI
+                                *  * ^*^*   ***  ***^* *****  *   *** *** * *^**^ 
+                             101        .         .         .         .         150 
+
+                             151        .         .         .         .         200 
+[Truncated_Name:1]Human        QEKDEGRRE-MVKEILTALGLLSCANTRTGSLSGGQRKRLAIALELVNNP
+[Truncated_Name:2]Red_flour_   GEKSKSEREDIITEILDTLGLLDHRKTMTSGLSGGQKKRLSIALELVSNP
+[Truncated_Name:3]Superworm    GDKPKSERAAIIHEILDTLGLLDHRKTMTSGLSGGQKKRLSIALELVSNP
+[Truncated_Name:4]Yellow_mea   GDKPKSERDAIITEILDTLGLSDHRKTMTSGLSGGQKKRLSIALELVSNP
+[Truncated_Name:5]Black_flou   GDKAKSEREDIITEILDTLGLLDHRKTMTSGLSGGQKKRLSIALELVSNP
+[Truncated_Name:6]Colorado_p   GDKPVHEREAVITEILDTLGLIDHRKTMTSGLSGGQKKRLSIALELVSNP
+[Truncated_Name:7]Asian_long   GDKKLHDREAIITEILDTLGLLDHRKTMTSGLSGGQKKRLSIALELVSNP
+[Truncated_Name:8]Lesser_gra   GDKKSHEREAIITEILDTLGLLDHRRTMTSSLSGGQKKRLSIALELVSNP
+                                ^*    *  ^^ ***  ***     * *  *****^*** ****** ** 
+                             151        .         .         .         .         200 
+
+                             201        .         .         .         .         250 
+[Truncated_Name:1]Human        PVMFFDEPTSGLDSASCFQVVSLMKGLAQGGRSIICTIHQPSAKLFELFD
+[Truncated_Name:2]Red_flour_   PIMFFDEPTSGLDSSSCFQCISLLKTLARGGRTIICTIHQPSARLFEMFD
+[Truncated_Name:3]Superworm    PIMFFDEPTSGLDSSSCFQCISLLKTLARGGRTIICTIHQPSARLFEMFD
+[Truncated_Name:4]Yellow_mea   PIMFFDEPTSGLDSSSCFQCISLLKTLARGGRTIICTIHQPSARLFEMFD
+[Truncated_Name:5]Black_flou   PIMFFDEPTSGLDSSSCFQCISLLKTLARGGRTIICTIHQPSARLFEMFD
+[Truncated_Name:6]Colorado_p   PIMFFDEPTSGLDSSSCFQCISLLKTLAKGGRTIICTIHQPSARLFEMFD
+[Truncated_Name:7]Asian_long   PIMFFDEPTSGLDSSSCFQCISLLKTLAKGGRTIICTIHQPSARLFEMFD
+[Truncated_Name:8]Lesser_gra   PVMFFDEPTSGLDSSSCFQCISLLKTLAGGGRTIICTIHQPSARLFEMFD
+                               *^************ **** ^**^* ** ***^**********^***^** 
+                             201        .         .         .         .         250 
+
+                             251        .         .         .         .         300 
+[Truncated_Name:1]Human        QLYVLSQGQCVYRGKVCNLVPYLRDLGLNCPTYH---NPADFVMEVASGE
+[Truncated_Name:2]Red_flour_   HLYTLADGQCVYQGSTKQLVPFLATLG--TPMXHRTTXPXSYIIXVAXGE
+[Truncated_Name:3]Superworm    HLYTLADGQCVYQGSTKQLVPFLASLSLQCPAYH---NPASYIIEVACGE
+[Truncated_Name:4]Yellow_mea   HLYTLADGQCVYQGSTNQLVPFLATLGLQCPSYH---NPASYIIEVACGE
+[Truncated_Name:5]Black_flou   HLYTLADGQCVYQGSTKELVPFLATLGLQCPSYH---NPASYIIEVACGE
+[Truncated_Name:6]Colorado_p   QLYTLADGQCVYQGSTNQLVPFLGSLGLQCPAYH---NPASYIIEVACGE
+[Truncated_Name:7]Asian_long   QLYTLADGQCVYQGSTNQLVPFLGTLGLQCPSYH---NPASYIIEVACGE
+[Truncated_Name:8]Lesser_gra   QLYTLSEGQCVYQGSTKQLVPFLGTLGLQCPSYH---NPASFIIEVACGE
+                                ** *  ***** *    ***^*  *    *  *    *  ^^^ ** ** 
+                             251        .         .         .         .         300 
+
+                             301 303 
+[Truncated_Name:1]Human        YGD
+[Truncated_Name:2]Red_flour_   YGD
+[Truncated_Name:3]Superworm    YGD
+[Truncated_Name:4]Yellow_mea   YGD
+[Truncated_Name:5]Black_flou   YGD
+[Truncated_Name:6]Colorado_p   YGD
+[Truncated_Name:7]Asian_long   YGD
+[Truncated_Name:8]Lesser_gra   YGD
+                               *** 
+                             301 303 
+
+Call:
+  read.fasta(file = "muscle-I20260606-223917-0223-39685229-p1m.fa")
+
+Class:
+  fasta
+
+Alignment dimensions:
+  8 sequence rows; 303 position columns (287 non-gap, 16 gap) 
+
++ attr: id, ali, call</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>seqide.mat <span class="ot">&lt;-</span> <span class="fu">seqidentity</span>(aln)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(seqide.mat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="findagene_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>consensus.seq <span class="ot">&lt;-</span> <span class="fu">consensus</span>(aln)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>consensus.seq<span class="sc">$</span>seq</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "-" "-" "M" "A" "T" "-" "-" "L" "L" "L" "-" "N" "R" "S" "S" "D" "-" "-"
+ [19] "K" "V" "Q" "I" "T" "P" "-" "Q" "-" "K" "T" "L" "T" "H" "L" "P" "-" "R"
+ [37] "P" "K" "V" "D" "L" "A" "F" "S" "N" "L" "-" "Y" "T" "V" "K" "Q" "G" "-"
+ [55] "-" "-" "-" "-" "K" "-" "E" "K" "T" "I" "L" "K" "S" "V" "S" "G" "R" "L"
+ [73] "R" "S" "G" "E" "L" "T" "A" "I" "M" "G" "P" "S" "G" "A" "G" "K" "S" "T"
+ [91] "L" "L" "N" "I" "L" "T" "G" "Y" "R" "T" "-" "G" "-" "-" "G" "Q" "I" "L"
+[109] "M" "N" "D" "-" "E" "R" "D" "L" "S" "Q" "F" "R" "K" "L" "S" "A" "Y" "I"
+[127] "M" "Q" "D" "N" "Q" "L" "H" "-" "N" "L" "T" "V" "D" "E" "A" "M" "N" "V"
+[145] "A" "A" "K" "L" "K" "I" "G" "D" "K" "-" "-" "-" "E" "R" "E" "A" "I" "I"
+[163] "T" "E" "I" "L" "D" "T" "L" "G" "L" "L" "D" "H" "R" "K" "T" "M" "T" "S"
+[181] "G" "L" "S" "G" "G" "Q" "K" "K" "R" "L" "S" "I" "A" "L" "E" "L" "V" "S"
+[199] "N" "P" "P" "I" "M" "F" "F" "D" "E" "P" "T" "S" "G" "L" "D" "S" "S" "S"
+[217] "C" "F" "Q" "C" "I" "S" "L" "L" "K" "T" "L" "A" "-" "G" "G" "R" "T" "I"
+[235] "I" "C" "T" "I" "H" "Q" "P" "S" "A" "R" "L" "F" "E" "M" "F" "D" "-" "L"
+[253] "Y" "T" "L" "A" "D" "G" "Q" "C" "V" "Y" "Q" "G" "S" "T" "-" "Q" "L" "V"
+[271] "P" "F" "L" "-" "T" "L" "G" "L" "Q" "C" "P" "-" "Y" "H" "-" "-" "-" "N"
+[289] "P" "A" "S" "Y" "I" "I" "E" "V" "A" "C" "G" "E" "Y" "G" "D"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Blast search of consensus sequence</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>blast.consensus <span class="ot">&lt;-</span> <span class="fu">blast.pdb</span>(consensus.seq<span class="sc">$</span>seq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Searching ... please wait (updates every 5 seconds) RID = 2A6K7DHJ014 
+ .
+ Reporting 473 hits</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(blast.consensus<span class="sc">$</span>hit.tbl, <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         queryid subjectids identity alignmentlength mismatches gapopens
+1  Query_2440563     7R8C_A   58.966             290         97       14
+2  Query_2440563     7R8D_A   58.621             290         98       14
+3  Query_2440563     7OZ1_A   58.621             290         98       14
+4  Query_2440563     7FDV_A   58.621             290         98       14
+5  Query_2440563     8I38_A   37.008             254        126       10
+6  Query_2440563     8WBA_A   37.008             254        126       10
+7  Query_2440563     8I3A_A   36.614             254        127       10
+8  Query_2440563     8WAM_A   36.614             254        127       10
+9  Query_2440563     7OJ8_A   37.449             243        132       10
+10 Query_2440563     6ETI_A   37.449             243        132       10
+11 Query_2440563     5NJ3_A   37.449             243        132       10
+12 Query_2440563     6HCO_A   37.037             243        133       10
+13 Query_2440563     6HBU_A   37.037             243        133       10
+14 Query_2440563     8WTM_A   37.004             227        126        7
+15 Query_2440563     9IUK_A   38.583             254        129       11
+17 Query_2440563     7R87_B   36.975             238        127       11
+18 Query_2440563     7R88_B   36.975             238        127       11
+19 Query_2440563     8CUB_B   36.975             238        127       11
+20 Query_2440563     5DO7_B   36.975             238        127       11
+21 Query_2440563     7JR7_B   36.975             238        127       11
+   q.start q.end s.start s.end   evalue bitscore positives mlog.evalue pdb.id
+1        3   270      46   335 8.50e-96      296     72.41   218.90810 7R8C_A
+2        3   270      46   335 2.70e-95      295     72.41   217.75233 7R8D_A
+3        3   270      46   335 3.36e-95      295     72.41   217.53364 7OZ1_A
+4        3   270      46   335 3.42e-95      295     72.41   217.51594 7FDV_A
+5       40   266      76   322 3.32e-41      151     61.42    93.20602 8I38_A
+6       40   266     112   358 4.94e-41      151     61.42    92.80862 8WBA_A
+7       40   266      76   322 1.13e-40      150     61.42    91.98119 8I3A_A
+8       40   266     112   358 1.59e-40      150     61.42    91.63967 8WAM_A
+9       44   267      70   311 1.96e-38      144     60.08    86.82529 7OJ8_A
+10      44   267      60   301 2.06e-38      144     60.08    86.77553 6ETI_A
+11      44   267      69   310 2.11e-38      144     60.08    86.75155 5NJ3_A
+12      44   267      69   310 6.85e-38      142     60.08    85.57398 6HCO_A
+13      44   267      60   301 6.92e-38      142     60.08    85.56382 6HBU_A
+14      43   252     103   329 8.35e-37      139     59.47    83.07339 8WTM_A
+15      37   263     866  1119 1.75e-36      139     55.51    82.33345 9IUK_A
+17      48   263      88   324 5.85e-35      134     58.40    78.82404 7R87_B
+18      48   263      88   324 6.45e-35      134     58.40    78.72640 7R88_B
+19      48   263      90   326 7.36e-35      134     58.40    78.59442 8CUB_B
+20      48   263      90   326 7.46e-35      134     58.40    78.58092 5DO7_B
+21      48   263      88   324 7.81e-35      134     58.40    78.53507 7JR7_B
+      acc
+1  7R8C_A
+2  7R8D_A
+3  7OZ1_A
+4  7FDV_A
+5  8I38_A
+6  8WBA_A
+7  8I3A_A
+8  8WAM_A
+9  7OJ8_A
+10 6ETI_A
+11 5NJ3_A
+12 6HCO_A
+13 6HBU_A
+14 8WTM_A
+15 9IUK_A
+17 7R87_B
+18 7R88_B
+19 8CUB_B
+20 5DO7_B
+21 7JR7_B</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>hits <span class="ot">&lt;-</span> <span class="fu">plot.blast</span>(blast.consensus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  * Possible cutoff values:    217 -3 
+            Yielding Nhits:    4 473 
+
+  * Chosen cutoff value of:    217 
+            Yielding Nhits:    4 </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="findagene_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>hits</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$hits
+  pdb.id   acc      group
+1 "7R8C_A" "7R8C_A" "1"  
+2 "7R8D_A" "7R8D_A" "1"  
+3 "7OZ1_A" "7OZ1_A" "1"  
+4 "7FDV_A" "7FDV_A" "1"  
+
+$pdb.id
+[1] "7R8C_A" "7R8D_A" "7OZ1_A" "7FDV_A"
+
+$acc
+[1] "7R8C_A" "7R8D_A" "7OZ1_A" "7FDV_A"
+
+$inds
+  [1]  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [13] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [25] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [37] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [49] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [61] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [73] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [85] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+ [97] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[109] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[121] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[133] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[145] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[157] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[169] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[181] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[193] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[205] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[217] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[229] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[241] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[253] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[265] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[277] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[289] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[301] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[313] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[325] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[337] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[349] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[361] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[373] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[385] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[397] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[409] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[421] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[433] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[445] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[457] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[469] FALSE FALSE FALSE FALSE FALSE
+
+attr(,"class")
+[1] "blast"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pdb.annotate</span>(hits<span class="sc">$</span>pdb.id)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       structureId chainId macromoleculeType chainLength experimentalTechnique
+7R8C_A        7R8C       A           Protein         666                    EM
+7R8D_A        7R8D       A           Protein         666                    EM
+7OZ1_A        7OZ1       A           Protein         680                    EM
+7FDV_A        7FDV       A           Protein         678                    EM
+       resolution scopDomain                                     pfam
+7R8C_A       3.70       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+7R8D_A       3.20       &lt;NA&gt;               ABC transporter (ABC_tran)
+7OZ1_A       4.00       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+7FDV_A       3.26       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+              ligandId
+7R8C_A            &lt;NA&gt;
+7R8D_A         CLR (4)
+7OZ1_A PEE,Y01 (4),ATP
+7FDV_A     ATP,CLR,HWP
+                                                                                                                                    ligandName
+7R8C_A                                                                                                                                    &lt;NA&gt;
+7R8D_A                                                                                                                         CHOLESTEROL (4)
+7OZ1_A                                   1,2-dioleoyl-sn-glycero-3-phosphoethanolamine,CHOLESTEROL HEMISUCCINATE (4),ADENOSINE-5'-TRIPHOSPHATE
+7FDV_A ADENOSINE-5'-TRIPHOSPHATE,CHOLESTEROL,[(E,2S,3R)-2-(hexadecanoylamino)-3-oxidanyl-octadec-4-enyl] 2-(trimethylazaniumyl)ethyl phosphate
+             source
+7R8C_A Homo sapiens
+7R8D_A Homo sapiens
+7OZ1_A Homo sapiens
+7FDV_A Homo sapiens
+                                                                                 structureTitle
+7R8C_A                                                             The structure of human ABCG1
+7R8D_A                                      The structure of human ABCG1 E242Q with cholesterol
+7OZ1_A     Cryo-EM structure of ABCG1 E242Q mutant with ATP and cholesteryl hemisuccinate bound
+7FDV_A Cryo-EM structure of the human cholesterol transporter ABCG1 in complex with cholesterol
+                                              citation rObserved rFree rWork
+7R8C_A Sun, Y., et al. Proc Natl Acad Sci U S A (2021)        NA    NA    NA
+7R8D_A Sun, Y., et al. Proc Natl Acad Sci U S A (2021)        NA    NA    NA
+7OZ1_A         Skarda, L., et al. J Mol Biology (2021)        NA    NA    NA
+7FDV_A                  Xu, D., et al. Cell Rep (2022)        NA    NA    NA
+       spaceGroup
+7R8C_A       &lt;NA&gt;
+7R8D_A       &lt;NA&gt;
+7OZ1_A       &lt;NA&gt;
+7FDV_A       &lt;NA&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pdb.annotate</span>(<span class="fu">head</span>(blast.consensus[[<span class="st">"hit.tbl"</span>]]<span class="sc">$</span>subjectids, <span class="dv">20</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       structureId chainId macromoleculeType chainLength experimentalTechnique
+7R8C_A        7R8C       A           Protein         666                    EM
+7R8D_A        7R8D       A           Protein         666                    EM
+7OZ1_A        7OZ1       A           Protein         680                    EM
+7FDV_A        7FDV       A           Protein         678                    EM
+8I38_A        8I38       A           Protein         662                    EM
+8WBA_A        8WBA       A           Protein         698                    EM
+8I3A_A        8I3A       A           Protein         662                    EM
+8WAM_A        8WAM       A           Protein         698                    EM
+7OJ8_A        7OJ8       A           Protein         665                    EM
+6ETI_A        6ETI       A           Protein         655                    EM
+5NJ3_A        5NJ3       A           Protein         664                    EM
+6HCO_A        6HCO       A           Protein         664                    EM
+6HBU_A        6HBU       A           Protein         655                    EM
+8WTM_A        8WTM       A           Protein         736                    EM
+9IUK_A        9IUK       A           Protein        1501                    EM
+7R87_B        7R87       B           Protein         715                    EM
+7R88_B        7R88       B           Protein         715                    EM
+8CUB_B        8CUB       B           Protein         687                 X-ray
+5DO7_B        5DO7       B           Protein         685                 X-ray
+7JR7_B        7JR7       B           Protein         673                    EM
+       resolution scopDomain                                     pfam
+7R8C_A       3.70       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+7R8D_A       3.20       &lt;NA&gt;               ABC transporter (ABC_tran)
+7OZ1_A       4.00       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+7FDV_A       3.26       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+8I38_A       2.90       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+8WBA_A       3.10       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+8I3A_A       3.04       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+8WAM_A       3.23       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+7OJ8_A       3.40       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+6ETI_A       3.10       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+5NJ3_A       3.78       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+6HCO_A       3.58       &lt;NA&gt;               ABC transporter (ABC_tran)
+6HBU_A       3.09       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+8WTM_A       2.65       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+9IUK_A       3.38       &lt;NA&gt; ABC-transporter N-terminal (ABC_trans_N)
+7R87_B       3.40       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+7R88_B       3.50       &lt;NA&gt; ABC-2 type transporter (ABC2_membrane_7)
+8CUB_B       4.05       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+5DO7_B       3.93       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+7JR7_B       3.30       &lt;NA&gt;   ABC-2 type transporter (ABC2_membrane)
+              ligandId
+7R8C_A            &lt;NA&gt;
+7R8D_A         CLR (4)
+7OZ1_A ATP,Y01 (4),PEE
+7FDV_A     ATP,HWP,CLR
+8I38_A            &lt;NA&gt;
+8WBA_A         Y01 (2)
+8I3A_A      ATP (2),MG
+8WAM_A          ATP,MG
+7OJ8_A     CLR (2),ATP
+6ETI_A             BWQ
+5NJ3_A            &lt;NA&gt;
+6HCO_A             FY5
+6HBU_A          MG,ATP
+8WTM_A         JAA (2)
+9IUK_A           A1L26
+7R87_B            &lt;NA&gt;
+7R88_B            &lt;NA&gt;
+8CUB_B            &lt;NA&gt;
+5DO7_B            &lt;NA&gt;
+7JR7_B            &lt;NA&gt;
+                                                                                                                                                                                              ligandName
+7R8C_A                                                                                                                                                                                              &lt;NA&gt;
+7R8D_A                                                                                                                                                                                   CHOLESTEROL (4)
+7OZ1_A                                                                                             ADENOSINE-5'-TRIPHOSPHATE,CHOLESTEROL HEMISUCCINATE (4),1,2-dioleoyl-sn-glycero-3-phosphoethanolamine
+7FDV_A                                                           ADENOSINE-5'-TRIPHOSPHATE,[(E,2S,3R)-2-(hexadecanoylamino)-3-oxidanyl-octadec-4-enyl] 2-(trimethylazaniumyl)ethyl phosphate,CHOLESTEROL
+8I38_A                                                                                                                                                                                              &lt;NA&gt;
+8WBA_A                                                                                                                                                                     CHOLESTEROL HEMISUCCINATE (2)
+8I3A_A                                                                                                                                                       ADENOSINE-5'-TRIPHOSPHATE (2),MAGNESIUM ION
+8WAM_A                                                                                                                                                           ADENOSINE-5'-TRIPHOSPHATE,MAGNESIUM ION
+7OJ8_A                                                                                                                                                         CHOLESTEROL (2),ADENOSINE-5'-TRIPHOSPHATE
+6ETI_A ~{tert}-butyl 3-[(2~{S},5~{S},8~{S})-14-cyclopentyloxy-2-(2-methylpropyl)-4,7-bis(oxidanylidene)-3,6,17-triazatetracyclo[8.7.0.0^{3,8}.0^{11,16}]heptadeca-1(10),11,13,15-tetraen-5-yl]propanoate
+5NJ3_A                                                                                                                                                                                              &lt;NA&gt;
+6HCO_A                                                                                                                                                                                 estrone 3-sulfate
+6HBU_A                                                                                                                                                           MAGNESIUM ION,ADENOSINE-5'-TRIPHOSPHATE
+8WTM_A                                                                                                                                 {(1R,2R)-3-oxo-2-[(2Z)-pent-2-en-1-yl]cyclopentyl}acetic acid (2)
+9IUK_A                                                                                                                                                                                   Pip2(20:4/18:0)
+7R87_B                                                                                                                                                                                              &lt;NA&gt;
+7R88_B                                                                                                                                                                                              &lt;NA&gt;
+8CUB_B                                                                                                                                                                                              &lt;NA&gt;
+5DO7_B                                                                                                                                                                                              &lt;NA&gt;
+7JR7_B                                                                                                                                                                                              &lt;NA&gt;
+                        source
+7R8C_A            Homo sapiens
+7R8D_A            Homo sapiens
+7OZ1_A            Homo sapiens
+7FDV_A            Homo sapiens
+8I38_A    Arabidopsis thaliana
+8WBA_A    Arabidopsis thaliana
+8I3A_A    Arabidopsis thaliana
+8WAM_A    Arabidopsis thaliana
+7OJ8_A            Homo sapiens
+6ETI_A            Homo sapiens
+5NJ3_A            Homo sapiens
+6HCO_A            Homo sapiens
+6HBU_A            Homo sapiens
+8WTM_A    Arabidopsis thaliana
+9IUK_A Candida albicans SC5314
+7R87_B            Homo sapiens
+7R88_B            Homo sapiens
+8CUB_B            Homo sapiens
+5DO7_B            Homo sapiens
+7JR7_B            Homo sapiens
+                                                                                 structureTitle
+7R8C_A                                                             The structure of human ABCG1
+7R8D_A                                      The structure of human ABCG1 E242Q with cholesterol
+7OZ1_A     Cryo-EM structure of ABCG1 E242Q mutant with ATP and cholesteryl hemisuccinate bound
+7FDV_A Cryo-EM structure of the human cholesterol transporter ABCG1 in complex with cholesterol
+8I38_A           Cryo-EM structure of abscisic acid transporter AtABCG25 in inward conformation
+8WBA_A                                             Cryo-EM structure of the ABCG25 bound to CHS
+8I3A_A          Cryo-EM structure of abscisic acid transporter AtABCG25 in outward conformation
+8WAM_A                  Cryo-EM structure of the ABCG25 E232Q mutant bound to ATP and Magnesium
+7OJ8_A                                                               ABCG2 E1S turnover-2 state
+6ETI_A                                                       Structure of inhibitor-bound ABCG2
+5NJ3_A                                      Structure of an ABC transporter: complete structure
+6HCO_A       Cryo-EM structure of the ABCG2 E211Q mutant bound to estrone 3-sulfate and 5D3-Fab
+6HBU_A                   Cryo-EM structure of the ABCG2 E211Q mutant bound to ATP and Magnesium
+8WTM_A                        Cryo-EM structure of jasmonic acid transporter ABCG16 bound to JA
+9IUK_A                                      The structure of Candida albicans Cdr1 in apo state
+7R87_B                                              The structure of human ABCG5-WT/ABCG8-I419E
+7R88_B                                              The structure of human ABCG5-I529W/ABCG8-WT
+8CUB_B                                Crystal Structure of ABCG5/G8 in Complex with Cholesterol
+5DO7_B                            Crystal Structure of the Human Sterol Transporter ABCG5/ABCG8
+7JR7_B                          Cryo-EM structure of ABCG5/G8 in complex with Fab 2E10 and 11F4
+                                               citation rObserved   rFree
+7R8C_A  Sun, Y., et al. Proc Natl Acad Sci U S A (2021)        NA      NA
+7R8D_A  Sun, Y., et al. Proc Natl Acad Sci U S A (2021)        NA      NA
+7OZ1_A          Skarda, L., et al. J Mol Biology (2021)        NA      NA
+7FDV_A                   Xu, D., et al. Cell Rep (2022)        NA      NA
+8I38_A              Huang, X., et al. Nat Plants (2023)        NA      NA
+8WBA_A              Xin, J., et al. Plant Commun (2024)        NA      NA
+8I3A_A              Huang, X., et al. Nat Plants (2023)        NA      NA
+8WAM_A              Xin, J., et al. Plant Commun (2024)        NA      NA
+7OJ8_A                 Yu, Q., et al. Nat Commun (2021)        NA      NA
+6ETI_A Jackson, S.M., et al. Nat Struct Mol Biol (2018)        NA      NA
+5NJ3_A             Taylor, N.M.I., et al. Nature (2017)        NA      NA
+6HCO_A            Manolaridis, I., et al. Nature (2018)        NA      NA
+6HBU_A            Manolaridis, I., et al. Nature (2018)        NA      NA
+8WTM_A                 An, N., et al. Nat Plants (2024)        NA      NA
+9IUK_A               Peng, Y., et al. Nat Commun (2024)        NA      NA
+7R87_B  Sun, Y., et al. Proc Natl Acad Sci U S A (2021)        NA      NA
+7R88_B  Sun, Y., et al. Proc Natl Acad Sci U S A (2021)        NA      NA
+8CUB_B          Farhat, D., et al. J Mol Biology (2022)   0.24920 0.30290
+5DO7_B                  Lee, J.Y., et al. Nature (2016)   0.24951 0.32871
+7JR7_B             Zhang, H., et al. Commun Biol (2021)        NA      NA
+         rWork spaceGroup
+7R8C_A      NA       &lt;NA&gt;
+7R8D_A      NA       &lt;NA&gt;
+7OZ1_A      NA       &lt;NA&gt;
+7FDV_A      NA       &lt;NA&gt;
+8I38_A      NA       &lt;NA&gt;
+8WBA_A      NA       &lt;NA&gt;
+8I3A_A      NA       &lt;NA&gt;
+8WAM_A      NA       &lt;NA&gt;
+7OJ8_A      NA       &lt;NA&gt;
+6ETI_A      NA       &lt;NA&gt;
+5NJ3_A      NA       &lt;NA&gt;
+6HCO_A      NA       &lt;NA&gt;
+6HBU_A      NA       &lt;NA&gt;
+8WTM_A      NA       &lt;NA&gt;
+9IUK_A      NA       &lt;NA&gt;
+7R87_B      NA       &lt;NA&gt;
+7R88_B      NA       &lt;NA&gt;
+8CUB_B 0.24590    I 2 2 2
+5DO7_B 0.24532    I 2 2 2
+7JR7_B      NA       &lt;NA&gt;</code></pre>
+</div>
+</div>
+<section id="load-in-pdb-format-files" class="level1">
+<h1>Load in PDB format files</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pdb_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path=</span><span class="st">"findagene_3f4e9/"</span>,</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">pattern=</span><span class="st">"*.pdb"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">basename</span>(pdb_files)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "findagene_3f4e9_unrelaxed_rank_001_alphafold2_ptm_model_3_seed_000.pdb"
+[2] "findagene_3f4e9_unrelaxed_rank_002_alphafold2_ptm_model_4_seed_000.pdb"
+[3] "findagene_3f4e9_unrelaxed_rank_003_alphafold2_ptm_model_2_seed_000.pdb"
+[4] "findagene_3f4e9_unrelaxed_rank_004_alphafold2_ptm_model_1_seed_000.pdb"
+[5] "findagene_3f4e9_unrelaxed_rank_005_alphafold2_ptm_model_5_seed_000.pdb"</code></pre>
+</div>
+</div>
+</section>
+<section id="residue-conservation-from-alignment-file" class="level1">
+<h1>Residue conservation from alignment file:</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>aln_file <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path=</span><span class="st">"findagene_3f4e9/"</span>,</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">pattern=</span><span class="st">".a3m$"</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>aln_file</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "findagene_3f4e9//findagene_3f4e9.a3m"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>aln <span class="ot">&lt;-</span> <span class="fu">read.fasta</span>(aln_file[<span class="dv">1</span>], <span class="at">to.upper =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " ** Duplicated sequence id's: 101 **"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(aln<span class="sc">$</span>ali)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12304   438</code></pre>
+</div>
+</div>
+<p>Score residue conservation in alignment, and plot:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">conserv</span>(aln)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotb3</span>(sim[<span class="dv">1</span><span class="sc">:</span><span class="dv">438</span>], <span class="at">ylab=</span><span class="st">"Conservation Score"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="findagene_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotb3</span>(sim[<span class="dv">1</span><span class="sc">:</span><span class="dv">295</span>], <span class="at">ylab=</span><span class="st">"Conservation Score"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="findagene_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>sim[<span class="dv">270</span><span class="sc">:</span><span class="dv">295</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] -0.0086172474 -0.0075145542 -0.0061408196 -0.0081859243 -0.0088667491
+ [6] -0.0081280328 -0.0078482845 -0.0073780769 -0.0068228123 -0.0055524652
+[11] -0.0041168794 -0.0032330253 -0.0007927882 -0.0020194732 -0.0017754730
+[16] -0.0023547652 -0.0041231552 -0.0055852155 -0.0045496875 -0.0034294539
+[21] -0.0030399711 -0.0032117326 -0.0027558153 -0.0058588452 -0.0049636101
+[26] -0.0039530081</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>m1.pdb <span class="ot">&lt;-</span> <span class="fu">read.pdb</span>(pdb_files[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>m1.pdb</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Call:  read.pdb(file = pdb_files[1])
+
+   Total Models#: 1
+     Total Atoms#: 2238,  XYZs#: 6714  Chains#: 1  (values: A)
+
+     Protein Atoms#: 2238  (residues/Calpha atoms#: 290)
+     Nucleic acid Atoms#: 0  (residues/phosphate atoms#: 0)
+
+     Non-protein/nucleic Atoms#: 0  (residues: 0)
+     Non-protein/nucleic resid values: [ none ]
+
+   Protein sequence:
+      NKMATDTVLLKNRSSDYKVQITPTQQKTLTHLPQRPKVDLAFSNLKYTVKQGKAEKTILK
+      SVSGRLRSGELTAIMGPSGAGKSTLLNILTGYRTDGVQGQILMNDSERDLSQFRKLSAYI
+      MQDNQLHLNLTVDEAMNVAAKLKIGEKSKSEREDIITEILDTLGLLDHRKTMTSGLSGGQ
+      KKRLSIALELVSNPPIMFFDEPTSGLDSSSCFQCISLLKTLARGG...&lt;cut&gt;...EYGD
+
++ attr: atom, xyz, calpha, call</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(m1.pdb<span class="sc">$</span>atom<span class="sc">$</span>resno))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 290</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(m1.pdb<span class="sc">$</span>atom<span class="sc">$</span>resno)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18
+ [19]  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36
+ [37]  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54
+ [55]  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72
+ [73]  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90
+ [91]  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106 107 108
+[109] 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126
+[127] 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144
+[145] 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162
+[163] 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180
+[181] 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197 198
+[199] 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216
+[217] 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233 234
+[235] 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252
+[253] 253 254 255 256 257 258 259 260 261 262 263 264 265 266 267 268 269 270
+[271] 271 272 273 274 276 277 278 279 281 283 284 285 286 288 289 291 292 293
+[289] 294 295</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">c</span>(sim[<span class="dv">1</span><span class="sc">:</span><span class="dv">274</span>],sim[<span class="dv">276</span><span class="sc">:</span><span class="dv">279</span>],sim[<span class="dv">281</span>],sim[<span class="dv">283</span><span class="sc">:</span><span class="dv">286</span>],sim[<span class="dv">288</span><span class="sc">:</span><span class="dv">289</span>],sim[<span class="dv">291</span><span class="sc">:</span><span class="dv">295</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 290</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>occ <span class="ot">&lt;-</span> <span class="fu">vec2resno</span>(<span class="fu">c</span>(sim[<span class="dv">1</span><span class="sc">:</span><span class="dv">274</span>],sim[<span class="dv">276</span><span class="sc">:</span><span class="dv">279</span>],sim[<span class="dv">281</span>],sim[<span class="dv">283</span><span class="sc">:</span><span class="dv">286</span>],sim[<span class="dv">288</span><span class="sc">:</span><span class="dv">289</span>],sim[<span class="dv">291</span><span class="sc">:</span><span class="dv">295</span>]), m1.pdb<span class="sc">$</span>atom<span class="sc">$</span>resno)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.pdb</span>(m1.pdb, <span class="at">o=</span>occ, <span class="at">file=</span><span class="st">"m1_consevation.pdb"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

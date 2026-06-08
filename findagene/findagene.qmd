@@ -1,0 +1,137 @@
+---
+title: "Find a Gene"
+author: "Harshitha Palacharla (A17775151)"
+format: html
+toc: true
+---
+
+```{r}
+library(bio3d)
+```
+
+```{r}
+aln <- read.fasta(file = "muscle-I20260606-223917-0223-39685229-p1m.fa")
+```
+
+```{r}
+aln
+```
+
+```{r}
+seqide.mat <- seqidentity(aln)
+```
+
+```{r}
+library(pheatmap)
+
+pheatmap(seqide.mat)
+```
+
+```{r}
+consensus.seq <- consensus(aln)
+
+consensus.seq$seq
+```
+
+```{r}
+# Blast search of consensus sequence
+blast.consensus <- blast.pdb(consensus.seq$seq)
+```
+
+```{r}
+head(blast.consensus$hit.tbl, 20)
+```
+
+```{r}
+hits <- plot.blast(blast.consensus)
+hits
+```
+
+```{r}
+pdb.annotate(hits$pdb.id)
+```
+
+```{r}
+pdb.annotate(head(blast.consensus[["hit.tbl"]]$subjectids, 20))
+```
+
+# Load in PDB format files
+
+```{r}
+pdb_files <- list.files(path="findagene_3f4e9/",
+                        pattern="*.pdb",
+                        full.names = TRUE)
+
+basename(pdb_files)
+```
+
+# Residue conservation from alignment file:
+
+```{r}
+aln_file <- list.files(path="findagene_3f4e9/",
+                       pattern=".a3m$",
+                        full.names = TRUE)
+aln_file
+```
+
+```{r}
+aln_alpha <- read.fasta(aln_file[1], to.upper = TRUE)
+```
+
+```{r}
+dim(aln_alpha$ali)
+```
+
+Score residue conservation in alignment, and plot:
+```{r}
+sim <- conserv(aln_alpha)
+plotb3(sim[1:438], ylab="Conservation Score")
+```
+
+```{r}
+#Plot only the residues corresponding to query/model sequences
+plotb3(sim[1:295], ylab="Conservation Score")
+```
+
+```{r}
+sim[270:295]
+```
+
+
+```{r}
+m1.pdb <- read.pdb(pdb_files[1])
+```
+
+```{r}
+m1.pdb
+```
+
+```{r}
+length(unique(m1.pdb$atom$resno))
+```
+
+```{r}
+unique(m1.pdb$atom$resno)
+```
+
+```{r}
+length(c(sim[1:274],sim[276:279],sim[281],sim[283:286],sim[288:289],sim[291:295]))
+```
+
+```{r}
+occ <- vec2resno(c(sim[1:274],sim[276:279],sim[281],sim[283:286],sim[288:289],sim[291:295]), m1.pdb$atom$resno)
+write.pdb(m1.pdb, o=occ, file="m1_conservation.pdb")
+```
+
+```{r}
+con_alpha <- consensus(aln_alpha, cutoff = 0.50)
+con_alpha$seq
+summary(con_alpha$seq.freq)
+```
+
+Residues 69, 76, 78-79, 81-82, 84-86, 99 are likely to be functional.
+
+```{r}
+con_alpha
+```
+
