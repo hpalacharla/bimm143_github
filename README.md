@@ -29,3 +29,7 @@ Class 14: [Pathway Analysis of RNA-Seq Data: Mini Project](class14/class14)
 Class 18: [Investigating Pertussis Resurgence Mini Project](class18/class18)
 
 Class 19: [Cancer Mutation Analysis Mini Project](class19/class19)
+
+## Find a Gene Project
+
+[Find a Gene Submission](findagene/findagene)
