@@ -28,13 +28,17 @@ Class 14: [Pathway Analysis of RNA-Seq Data: Mini Project](class14/class14)
 
 Class 15: [Introduction to Git and GitHub](git_play/test.md)
 
-Class 16: [UNIX for Bioinformatics + Launching/Using AWS EC2 Instances](class16/class16)
+Class 16: [UNIX for Bioinformatics + Launching/Using AWS EC2 Instances](class16/my_unix_notes.md)
 
 Class 17: Introduction to GitHub Pages + Online Portfolio Development
 
 Class 18: [Investigating Pertussis Resurgence Mini Project](class18/class18)
 
-Class 19: [Cancer Mutation Analysis Mini Project](class19/class19)
+Class 19: Cancer Mutation Analysis Mini Project
+
+- [Final Submission](class19/Palacharla_lab19.pdf)
+
+- [Work in R](class19/class19)
 
 ## Find a Gene Project
 
