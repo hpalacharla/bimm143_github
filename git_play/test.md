@@ -1,0 +1,22 @@
+# Git Notes
+
+
+## Basic git use
+
+Git keeps track of changes to your files over time and allows you to
+“rollback” to previous versions.
+
+To work with git you first initialize a git repo. In RStudio, this means
+you tick a little “Use git” button when you create a new project.
+
+On the command line, `git init`does the same thing.
+
+Then add files and edit files (i.e. do your work).
+
+When you want to store a copy of this state of your files, you do two
+key steps: `git add` (in R studio, clicking tick under “Staged”) and
+`git commit` (in R studio, clicking button to “Commit”).
+
+    git add .
+    git commit -m "Some message"
+    git status
