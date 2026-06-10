@@ -11,5 +11,102 @@ sd <- read.fasta("A17775151_mutant_seq.fa")
 sd
 ```
 
+```{r}
+norm.seq <- paste0(sd$ali[1,], collapse = "")
+norm.seq
+nchar(norm.seq)
+```
 
+```{r}
+mut.seq <- paste0(sd$ali[2,], collapse = "")
+mut.seq
+nchar(mut.seq)
+```
+
+> Q1. [1pt] What protein do these sequences correspond to? (Give both full gene/protein name and official symbol).
+
+BLASTp search with normal sequence, against RefSeq database and filtered to Homo sapien.
+
+Top hit (NP_006209.2) is phosphatidylinositol 4,5-bisphosphate 3-kinase catalytic subunit alpha isoform [Homo sapiens], with 100% identity, 100% query coverage, E = 0.0.
+
+Official Symbol: PIK3CA
+Official Full Name: phosphatidylinositol-4,5-bisphosphate 3-kinase catalytic subunit alpha
+Gene ID: 5290
+
+> Q2. [6pts] What are the tumor specific mutations in this particular case ( e.g. A130V)?
+
+```{r}
+match <- sd$ali[1,] == sd$ali[2,]
+which(match == FALSE)
+```
+
+```{r}
+sd$ali[,553]
+sd$ali[,573]
+sd$ali[,616]
+sd$ali[,642]
+```
+
+```{r}
+sd$ali[2,520:703]
+```
+
+```{r}
+# File names for all PDB models
+pdb_files <- list.files(path="mutant_tumor_b6146/",
+                        pattern="*.pdb",
+                        full.names = TRUE)
+
+# Print our PDB file names
+basename(pdb_files)
+```
+
+```{r}
+pdb_files[1]
+```
+
+```{r}
+m1.pdb <- read.pdb(pdb_files[1])
+```
+
+```{r}
+library(jsonlite)
+
+# Listing of all PAE JSON files
+pae_files <- list.files(path="mutant_tumor_b6146/",
+                        pattern=".*model.*\\.json",
+                        full.names = TRUE)
+
+pae1 <- read_json(pae_files[1],simplifyVector = TRUE)
+```
+
+```{r}
+plot.dmat(pae1$pae, 
+          xlab="Residue Position (i)",
+          ylab="Residue Position (j)",
+          main="PAE Score Plot for AlphaFold Rank 001 Model",
+          zlim=c(0,30))
+```
+
+```{r}
+library(bio3d)
+
+# Read all data from Models 
+#  and superpose/fit coords
+pdbs <- pdbaln(pdb_files, fit=TRUE, exefile="msa")
+```
+
+```{r}
+pdbs
+```
+
+```{r}
+plotb3(pdbs$b[1,], typ="l", lwd=2, main = "Plot of pLDDT Values for AlphaFold Rank 001 Model", ylab = "pLDDT Quality Score")
+abline(v=520, col="blue", lwd=1, lty = "dashed")
+abline(v=703, col="blue", lwd=1, lty = "dashed")
+```
+
+```{r}
+summary(pdbs$b[1,])
+```
 
