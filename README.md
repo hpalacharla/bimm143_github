@@ -34,7 +34,7 @@ Class 17: Introduction to GitHub Pages + Online Portfolio Development
 
 Class 18: [Investigating Pertussis Resurgence Mini Project](class18/class18)
 
-Class 19 (in-progress): [Cancer Mutation Analysis Mini Project](class19/class19)
+Class 19: [Cancer Mutation Analysis Mini Project](class19/class19)
 
 ## Find a Gene Project
 
